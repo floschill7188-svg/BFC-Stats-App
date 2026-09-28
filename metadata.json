@@ -1,0 +1,6 @@
+{
+  "name": "BFC Stats App",
+  "description": "Eine moderne und intuitive App für U18 FIBA Basketballtrainer, um Spielstatistiken live zu erfassen und nach dem Spiel eine KI-gestützte Analyse zu erhalten.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
