@@ -239,7 +239,7 @@ const GameSummary: React.FC<GameSummaryProps> = ({
     }
   };
 
-  const handleSaveAsImage = () => {
+  const handleSaveAsImage = async () => {
     if (!statContainerRef.current || typeof html2canvas === 'undefined') {
       alert("Die Bild-Export-Funktion konnte nicht geladen werden. Bitte lade die Seite neu.");
       return;
@@ -252,22 +252,60 @@ const GameSummary: React.FC<GameSummaryProps> = ({
     const originalBackgroundColor = elementToCapture.style.backgroundColor;
     elementToCapture.style.backgroundColor = '#1f2937'; 
 
-    html2canvas(elementToCapture, {
+    try {
+      if ((document as any).fonts?.ready) {
+        await (document as any).fonts.ready;
+      }
+
+      const canvas = await html2canvas(elementToCapture, {
         scale: 2, 
         backgroundColor: '#1f2937',
         useCORS: true,
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `${game.team.name}_vs_${game.opponent.name}_stats.png`.replace(/ /g, '_');
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    }).catch(err => {
-        console.error("Fehler beim Speichern als Bild:", err);
-        alert("Es ist ein Fehler beim Erstellen des Bildes aufgetreten.");
-    }).finally(() => {
-        elementToCapture.style.backgroundColor = originalBackgroundColor;
-        setIsSavingImage(false);
-    });
+        logging: false,
+        onclone: (clonedDoc: Document) => {
+          const stickyElements = clonedDoc.querySelectorAll('.sticky');
+          stickyElements.forEach(el => {
+            const htmlEl = el as HTMLElement;
+            htmlEl.style.position = 'static';
+            htmlEl.style.boxShadow = 'none';
+          });
+
+          const scrollContainers = clonedDoc.querySelectorAll('.overflow-x-auto');
+          scrollContainers.forEach(container => {
+            const htmlContainer = container as HTMLElement;
+            htmlContainer.style.overflow = 'visible';
+          });
+
+          const cells = clonedDoc.querySelectorAll('td, th');
+          cells.forEach(cell => {
+            const htmlCell = cell as HTMLElement;
+            htmlCell.style.lineHeight = '1.6';
+            htmlCell.style.overflow = 'visible';
+            htmlCell.style.paddingTop = '10px';
+            htmlCell.style.paddingBottom = '10px';
+          });
+
+          const spans = clonedDoc.querySelectorAll('td span, th span');
+          spans.forEach(span => {
+            const htmlSpan = span as HTMLElement;
+            htmlSpan.style.overflow = 'visible';
+            htmlSpan.style.lineHeight = '1.5';
+            htmlSpan.style.display = 'inline-block';
+          });
+        }
+      });
+
+      const link = document.createElement('a');
+      link.download = `${game.team.name}_vs_${game.opponent.name}_stats.png`.replace(/ /g, '_');
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error("Fehler beim Speichern als Bild:", err);
+      alert("Es ist ein Fehler beim Erstellen des Bildes aufgetreten.");
+    } finally {
+      elementToCapture.style.backgroundColor = originalBackgroundColor;
+      setIsSavingImage(false);
+    }
   };
   
   const quarterButtons = [

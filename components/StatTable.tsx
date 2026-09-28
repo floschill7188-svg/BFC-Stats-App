@@ -79,7 +79,7 @@ const PlayerStatRow: React.FC<{
     const threePPercentValue = player.stats['3PA'] > 0 ? ((player.stats['3PM'] / player.stats['3PA']) * 100) : 0;
 
     const renderSingleStatCell = (stat: Stat, max: number | undefined, isNegativeAllowed = false) => (
-        <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(player.stats[stat] || 0, max)}`}>
+        <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(player.stats[stat] || 0, max)}`}>
             {isEditable ? (
                 <StatInput 
                     value={player.stats[stat]} 
@@ -93,7 +93,7 @@ const PlayerStatRow: React.FC<{
     );
 
     const renderPairedStatCell = (madeStat: 'FGM' | 'FTM' | '3PM', attemptedStat: 'FGA' | 'FTA' | '3PA', max: number | undefined) => (
-        <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(player.stats[madeStat] || 0, max)}`}>
+        <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(player.stats[madeStat] || 0, max)}`}>
             {isEditable ? (
                 <div className="flex items-center justify-center gap-1">
                     <StatInput value={player.stats[madeStat]} onChange={e => onStatChange?.(player.id, madeStat, e.target.value)} />
@@ -113,14 +113,14 @@ const PlayerStatRow: React.FC<{
     return (
         <tr className="border-b border-gray-700 hover:bg-gray-700/50">
             {/* Sticky Player Name Column */}
-            <td className="p-2 font-medium text-left sticky left-0 z-10 bg-gray-800 border-r border-gray-700 min-w-[120px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">
-                <div className="flex items-center gap-1">
-                    {player.number !== undefined && <span className="text-gray-400 text-xs w-4">{player.number}</span>}
-                    <span className="truncate max-w-[110px]" title={player.name}>{player.name}</span>
+            <td className="py-2.5 px-3 font-medium text-left sticky left-0 z-10 bg-gray-800 border-r border-gray-700 min-w-[160px] sm:min-w-[190px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center gap-2 leading-normal">
+                    {player.number !== undefined && <span className="text-gray-400 text-xs font-mono w-5 shrink-0">{player.number}</span>}
+                    <span className="whitespace-nowrap font-medium text-gray-100 leading-relaxed inline-block py-0.5" title={player.name}>{player.name}</span>
                 </div>
             </td>
 
-            <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(player.stats.MIN || 0, maximums.MIN)}`}>
+            <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(player.stats.MIN || 0, maximums.MIN)}`}>
                 {isEditable ? (
                      <input
                         type="text"
@@ -132,9 +132,9 @@ const PlayerStatRow: React.FC<{
                     />
                 ) : formatMinutesDisplay(player.stats.MIN)}
             </td>
-            <td className={`p-2 text-center font-bold whitespace-nowrap bg-gray-800/30 ${getHighlightClass(totalPoints, maximums.P)}`}>{formatStat(totalPoints)}</td>
+            <td className={`py-2.5 px-2 text-center font-bold whitespace-nowrap leading-normal bg-gray-800/30 ${getHighlightClass(totalPoints, maximums.P)}`}>{formatStat(totalPoints)}</td>
             
-            <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(totalFGM, maximums.FGM)}`}>
+            <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(totalFGM, maximums.FGM)}`}>
                 {isEditable ? (
                     <div className="flex items-center justify-center gap-1">
                         <StatInput value={player.stats.FGM} onChange={e => onStatChange?.(player.id, 'FGM', e.target.value)} />
@@ -146,26 +146,26 @@ const PlayerStatRow: React.FC<{
                 )}
             </td>
 
-            {showDetails && <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(fgPercentValue, maximums.FG_PCT)}`}>{formatStat(fgPercentValue)}%</td>}
+            {showDetails && <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(fgPercentValue, maximums.FG_PCT)}`}>{formatStat(fgPercentValue)}%</td>}
 
             {renderPairedStatCell('FGM', 'FGA', maximums.FGM_2P)}
-            {showDetails && <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(twoPPercentValue, maximums.TWO_P_PCT)}`}>{formatStat(twoPPercentValue)}%</td>}
+            {showDetails && <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(twoPPercentValue, maximums.TWO_P_PCT)}`}>{formatStat(twoPPercentValue)}%</td>}
 
             {renderPairedStatCell('3PM', '3PA', maximums.THREE_PM)}
-            {showDetails && <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(threePPercentValue, maximums.THREE_P_PCT)}`}>{formatStat(threePPercentValue)}%</td>}
+            {showDetails && <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(threePPercentValue, maximums.THREE_P_PCT)}`}>{formatStat(threePPercentValue)}%</td>}
 
             {renderPairedStatCell('FTM', 'FTA', maximums.FTM)}
-            {showDetails && <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(ftPercentValue, maximums.FT_PCT)}`}>{formatStat(ftPercentValue)}%</td>}
+            {showDetails && <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(ftPercentValue, maximums.FT_PCT)}`}>{formatStat(ftPercentValue)}%</td>}
 
             
             {showDetails ? (
                 <>
                     {renderSingleStatCell('OREB', maximums.OREB)}
                     {renderSingleStatCell('DREB', maximums.DREB)}
-                    <td className={`p-2 text-center font-bold whitespace-nowrap ${getHighlightClass(totalRebounds, maximums.REB)}`}>{formatStat(totalRebounds)}</td>
+                    <td className={`py-2.5 px-2 text-center font-bold whitespace-nowrap leading-normal ${getHighlightClass(totalRebounds, maximums.REB)}`}>{formatStat(totalRebounds)}</td>
                 </>
             ) : (
-                <td className={`p-2 text-center whitespace-nowrap ${getHighlightClass(totalRebounds, maximums.REB)}`}>
+                <td className={`py-2.5 px-2 text-center whitespace-nowrap leading-normal ${getHighlightClass(totalRebounds, maximums.REB)}`}>
                     {isEditable ? (
                         <div className="flex items-center justify-center gap-1" title="Offensiv- / Defensiv-Rebounds">
                             <StatInput value={player.stats.OREB} onChange={e => onStatChange?.(player.id, 'OREB', e.target.value)} />
@@ -314,7 +314,7 @@ export const TeamTable: React.FC<{
     const SortableHeader: React.FC<{ config: typeof headers[0] }> = ({ config }) => {
         const isSorted = sortConfig?.key === config.key;
         return (
-            <th className={`p-2 font-semibold whitespace-nowrap text-${config.align || 'center'}`}>
+            <th className={`py-2.5 px-2 font-semibold whitespace-nowrap leading-normal text-${config.align || 'center'}`}>
                 {config.sortable && !isEditable ? (
                     <button onClick={() => requestSort(config.key as SortableKey)} className="flex items-center justify-center w-full hover:text-white transition-colors">
                         {config.label}
@@ -368,7 +368,7 @@ export const TeamTable: React.FC<{
                     <thead className="bg-gray-700 text-gray-300">
                         <tr>
                              {/* Sticky Name Header */}
-                            <th className="p-2 font-semibold whitespace-nowrap text-left sticky left-0 z-20 bg-gray-700 border-r border-gray-600 min-w-[120px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap text-left sticky left-0 z-20 bg-gray-700 border-r border-gray-600 min-w-[160px] sm:min-w-[190px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">
                                 { !isEditable ? (
                                     <button onClick={() => requestSort('name')} className="flex items-center w-full hover:text-white transition-colors">
                                         Spieler
@@ -384,38 +384,38 @@ export const TeamTable: React.FC<{
                     <tbody>
                         {processedPlayers.map(p => <PlayerStatRow key={p.id} player={p} showDetails={showDetails} maximums={maximums} isEditable={isEditable} onStatChange={onStatChange} />)}
                         <tr className="bg-gray-700 font-bold border-t-2 border-gray-500">
-                           <td className="p-2 text-left sticky left-0 z-10 bg-gray-700 border-r border-gray-600 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">TOTAL</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatMinutesDisplay(totals.MIN)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totalPoints)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{`${formatStat(totals.FGM + totals['3PM'])}-${formatStat(totals.FGA + totals['3PA'])}`}</td>
-                            {showDetails && <td className="p-2 text-center whitespace-nowrap">{formatStat(fgPercent)}%</td>}
-                            <td className="p-2 text-center whitespace-nowrap">{`${formatStat(totals.FGM)}-${formatStat(totals.FGA)}`}</td>
-                            {showDetails && <td className="p-2 text-center whitespace-nowrap">{formatStat(twoPPercent)}%</td>}
-                            <td className="p-2 text-center whitespace-nowrap">{`${formatStat(totals['3PM'])}-${formatStat(totals['3PA'])}`}</td>
-                            {showDetails && <td className="p-2 text-center whitespace-nowrap">{formatStat(threePPercent)}%</td>}
-                            <td className="p-2 text-center whitespace-nowrap">{`${formatStat(totals.FTM)}-${formatStat(totals.FTA)}`}</td>
-                            {showDetails && <td className="p-2 text-center whitespace-nowrap">{formatStat(ftPercent)}%</td>}
+                           <td className="py-2.5 px-3 text-left sticky left-0 z-10 bg-gray-700 border-r border-gray-600 min-w-[160px] sm:min-w-[190px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">TOTAL</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatMinutesDisplay(totals.MIN)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totalPoints)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{`${formatStat(totals.FGM + totals['3PM'])}-${formatStat(totals.FGA + totals['3PA'])}`}</td>
+                            {showDetails && <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(fgPercent)}%</td>}
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{`${formatStat(totals.FGM)}-${formatStat(totals.FGA)}`}</td>
+                            {showDetails && <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(twoPPercent)}%</td>}
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{`${formatStat(totals['3PM'])}-${formatStat(totals['3PA'])}`}</td>
+                            {showDetails && <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(threePPercent)}%</td>}
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{`${formatStat(totals.FTM)}-${formatStat(totals.FTA)}`}</td>
+                            {showDetails && <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(ftPercent)}%</td>}
 
                             {showDetails ? (
                                 <>
-                                    <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.OREB)}</td>
-                                    <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.DREB)}</td>
-                                    <td className="p-2 text-center whitespace-nowrap">{formatStat(totalRebounds)}</td>
+                                    <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.OREB)}</td>
+                                    <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.DREB)}</td>
+                                    <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totalRebounds)}</td>
                                 </>
                             ) : (
-                                <td className="p-2 text-center whitespace-nowrap">{formatStat(totalRebounds)}</td>
+                                <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totalRebounds)}</td>
                             )}
 
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.AST)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.STL)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.BLK)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.PF)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.TO)}</td>
-                            <td className="p-2 text-center whitespace-nowrap">{formatStat(totals.PLUS_MINUS)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.AST)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.STL)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.BLK)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.PF)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.TO)}</td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totals.PLUS_MINUS)}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     );
-}
+};
