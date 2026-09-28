@@ -47,27 +47,25 @@ const SeasonStats: React.FC<SeasonStatsProps> = ({ completedGames, roster, onBac
     
     const gamesForUser = completedGames;
 
-    const displayData = useMemo<Team | null>(() => {
-        if (!selectedTeam) return null;
-
-        const gamesForTeam = gamesForUser.filter(g => {
+    const gamesForTeam = useMemo(() => {
+        if (!selectedTeam) return [];
+        return gamesForUser.filter(g => {
             if (g.team.name !== selectedTeam) return false;
             if (selectedSeason === 'all') return true;
             const gameSeason = g.season || '25/26';
             return gameSeason === selectedSeason;
         });
+    }, [gamesForUser, selectedTeam, selectedSeason]);
+
+    const displayData = useMemo<Team | null>(() => {
+        if (!selectedTeam) return null;
 
         const gameCount = gamesForTeam.length;
         const gameCountText = `${gameCount} ${gameCount === 1 ? 'Spiel' : 'Spiele'}`;
 
         const playerStatsMap = new Map<number, { playerInfo: MasterRosterPlayer, stats: Player['stats'], gamesPlayed: number }>();
         roster
-            .filter(p => {
-                if (!p.teams?.includes(selectedTeam)) return false;
-                if (selectedSeason === 'all') return true;
-                const pSeasons = p.seasons && p.seasons.length > 0 ? p.seasons : ['25/26'];
-                return pSeasons.includes(selectedSeason);
-            })
+            .filter(p => !selectedTeam || p.teams?.includes(selectedTeam))
             .forEach(rosterPlayer => {
                 playerStatsMap.set(rosterPlayer.id, {
                     playerInfo: rosterPlayer,
@@ -78,13 +76,25 @@ const SeasonStats: React.FC<SeasonStatsProps> = ({ completedGames, roster, onBac
 
         gamesForTeam.forEach(game => {
             game.team.players.forEach(gamePlayer => {
-                const entry = playerStatsMap.get(gamePlayer.id);
-                if (entry) {
-                    entry.gamesPlayed += 1;
-                    for (const key in entry.stats) {
-                        const statKey = key as keyof Player['stats'];
-                        entry.stats[statKey] = (entry.stats[statKey] || 0) + (gamePlayer.stats[statKey] || 0);
-                    }
+                let entry = playerStatsMap.get(gamePlayer.id);
+                if (!entry) {
+                    const fallbackRoster: MasterRosterPlayer = {
+                        id: gamePlayer.id,
+                        name: gamePlayer.name,
+                        number: gamePlayer.number,
+                        teams: gamePlayer.teams || (selectedTeam ? [selectedTeam] : []),
+                    };
+                    entry = {
+                        playerInfo: fallbackRoster,
+                        stats: { FGM: 0, FGA: 0, '3PM': 0, '3PA': 0, OREB: 0, DREB: 0, AST: 0, STL: 0, BLK: 0, TO: 0, MIN: 0, FTM: 0, FTA: 0, PF: 0, PLUS_MINUS: 0 },
+                        gamesPlayed: 0
+                    };
+                    playerStatsMap.set(gamePlayer.id, entry);
+                }
+                entry.gamesPlayed += 1;
+                for (const key in entry.stats) {
+                    const statKey = key as keyof Player['stats'];
+                    entry.stats[statKey] = (entry.stats[statKey] || 0) + (gamePlayer.stats[statKey] || 0);
                 }
             });
         });
@@ -148,7 +158,7 @@ const SeasonStats: React.FC<SeasonStatsProps> = ({ completedGames, roster, onBac
             players: seasonPlayers.sort((a,b) => (a.number ?? 999) - (b.number ?? 999)),
             score: displayScore
         };
-    }, [gamesForUser, selectedTeam, selectedSeason, statViewMode, roster]);
+    }, [gamesForTeam, selectedTeam, selectedSeason, statViewMode, roster]);
     
     const handleTeamSelect = (teamName: string) => {
         setSelectedTeam(teamName);
@@ -302,7 +312,15 @@ const SeasonStats: React.FC<SeasonStatsProps> = ({ completedGames, roster, onBac
                     </header>
                     <main ref={statContainerRef} className="bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
                         {availableTeams.length > 0 && displayData && displayData.players.length > 0 ? (
-                            <TeamTable team={displayData} showScore={false} showPlayerNumber={false} />
+                            gamesForTeam.length === 0 ? (
+                                <div className="text-center py-10">
+                                    <p className="text-gray-400">
+                                        Für das Team &quot;{selectedTeam}&quot; wurden in {selectedSeason === 'all' ? 'allen Saisons' : `Saison ${selectedSeason}`} noch keine beendeten Spiele gefunden.
+                                    </p>
+                                </div>
+                            ) : (
+                                <TeamTable team={displayData} showScore={false} showPlayerNumber={false} />
+                            )
                         ) : (
                             <div className="text-center py-10">
                                 <p className="text-gray-400">
@@ -310,7 +328,7 @@ const SeasonStats: React.FC<SeasonStatsProps> = ({ completedGames, roster, onBac
                                         ? "Du wurdest noch keinem Team zugewiesen. Bitte wende dich an einen Trainer."
                                         : gamesForUser.length === 0 
                                         ? "Es wurden noch keine Spiele für dich freigegeben, um Statistiken anzuzeigen."
-                                        : `Für das Team "${selectedTeam}" wurden keine Spieler oder Spieldaten gefunden.`
+                                        : `Für das Team "${selectedTeam}" wurden in ${selectedSeason === 'all' ? 'allen Saisons' : `Saison ${selectedSeason}`} keine Spieler oder Spieldaten gefunden.`
                                     }
                                 </p>
                             </div>

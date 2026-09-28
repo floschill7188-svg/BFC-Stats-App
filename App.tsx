@@ -179,11 +179,12 @@ const App: React.FC = () => {
             if (docSnap.exists()) {
                 const dataPlayers = (docSnap.data().players || []) as MasterRosterPlayer[];
                 let needsUpdate = false;
-                // Alle bisherigen Spieler der Saison 25/26 zuordnen
+                // Alle bisherigen Spieler standardmäßig beiden Saisons 25/26 und 26/27 zuordnen
                 const updatedPlayers = dataPlayers.map(p => {
-                    const currentSeasons = new Set<Season>(p.seasons || []);
-                    if (!currentSeasons.has('25/26')) {
+                    const currentSeasons = new Set<Season>(p.seasons && p.seasons.length > 0 ? p.seasons : ['25/26', '26/27']);
+                    if (!currentSeasons.has('25/26') || !currentSeasons.has('26/27')) {
                         currentSeasons.add('25/26');
+                        currentSeasons.add('26/27');
                         needsUpdate = true;
                     }
                     return { ...p, seasons: Array.from(currentSeasons) };
