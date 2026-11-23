@@ -115,8 +115,10 @@ const PlayerStatRow: React.FC<{
             {/* Sticky Player Name Column */}
             <td className="py-2.5 px-3 font-medium text-left sticky left-0 z-10 bg-gray-800 border-r border-gray-700 min-w-[160px] sm:min-w-[190px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">
                 <div className="flex items-center gap-2 leading-normal">
-                    {player.number !== undefined && <span className="text-gray-400 text-xs font-mono w-5 shrink-0">{player.number}</span>}
-                    <span className="whitespace-nowrap font-medium text-gray-100 leading-relaxed inline-block py-0.5" title={player.name}>{player.name}</span>
+                    {player.number !== undefined && player.number !== null && (
+                        <span data-export-role="player-number" className="text-gray-400 text-xs font-mono w-5 shrink-0">{player.number}</span>
+                    )}
+                    <span data-export-role="player-name" className="whitespace-nowrap font-medium text-gray-100 leading-relaxed inline-block py-0.5" title={player.name}>{player.name}</span>
                 </div>
             </td>
 

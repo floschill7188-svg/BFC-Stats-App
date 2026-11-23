@@ -3,10 +3,8 @@ import { GameState, MasterRosterPlayer, Player, Team, UserProfile, Season, SEASO
 import { TeamTable } from './StatTable';
 import AiAnalysis from './AiAnalysis';
 import { exportSeasonToCsv, exportSeasonToXls } from '../utils/stats';
+import { exportStatTableAsImage } from '../utils/imageExport';
 import { SparklesIcon, DocumentArrowDownIcon, PhotoIcon, ShareIcon, TableCellsIcon } from './Icons';
-
-// Deklariert html2canvas für TypeScript, da es über ein Skript-Tag geladen wird
-declare const html2canvas: any;
 
 interface SeasonStatsProps {
     completedGames: GameState[];
@@ -197,73 +195,28 @@ const SeasonStats: React.FC<SeasonStatsProps> = ({ completedGames, roster, onBac
     };
     
       const handleSaveAsImage = async () => {
-        if (!statContainerRef.current || typeof html2canvas === 'undefined') {
-          alert("Die Bild-Export-Funktion konnte nicht geladen werden. Bitte lade die Seite neu.");
+        if (!statContainerRef.current || !statContainerRef.current.querySelector('table')) {
+          alert("Keine Statistiktabelle zum Exportieren vorhanden.");
           return;
         }
         if (isSavingImage) return;
 
         setIsSavingImage(true);
-        const elementToCapture = statContainerRef.current;
-        const originalBackgroundColor = elementToCapture.style.backgroundColor;
-        elementToCapture.style.backgroundColor = '#1f2937';
-
         try {
-          if ((document as any).fonts?.ready) {
-            await (document as any).fonts.ready;
-          }
-
-          const canvas = await html2canvas(elementToCapture, {
-            scale: 2, 
-            backgroundColor: '#1f2937', 
-            useCORS: true,
-            logging: false,
-            onclone: (clonedDoc: Document) => {
-              const stickyElements = clonedDoc.querySelectorAll('.sticky');
-              stickyElements.forEach(el => {
-                const htmlEl = el as HTMLElement;
-                htmlEl.style.position = 'static';
-                htmlEl.style.boxShadow = 'none';
-              });
-
-              const scrollContainers = clonedDoc.querySelectorAll('.overflow-x-auto');
-              scrollContainers.forEach(container => {
-                const htmlContainer = container as HTMLElement;
-                htmlContainer.style.overflow = 'visible';
-              });
-
-              const cells = clonedDoc.querySelectorAll('td, th');
-              cells.forEach(cell => {
-                const htmlCell = cell as HTMLElement;
-                htmlCell.style.lineHeight = '1.6';
-                htmlCell.style.overflow = 'visible';
-                htmlCell.style.paddingTop = '10px';
-                htmlCell.style.paddingBottom = '10px';
-              });
-
-              const spans = clonedDoc.querySelectorAll('td span, th span');
-              spans.forEach(span => {
-                const htmlSpan = span as HTMLElement;
-                htmlSpan.style.overflow = 'visible';
-                htmlSpan.style.lineHeight = '1.5';
-                htmlSpan.style.display = 'inline-block';
-              });
-            }
-          });
-
-          const link = document.createElement('a');
           const fileSuffix = 
               statViewMode === 'average' ? 'pro_spiel' :
               statViewMode === 'per30min' ? 'pro_30_min' :
               'gesamt';
-          link.download = `${selectedTeam}_saison_stats_${fileSuffix}.png`.replace(/ /g, '_');
-          link.href = canvas.toDataURL('image/png');
-          link.click();
+          const seasonSuffix = selectedSeason === 'all' ? 'alle_saisons' : selectedSeason.replace('/', '-');
+          await exportStatTableAsImage({
+            container: statContainerRef.current,
+            fileName: `${selectedTeam}_saison_stats_${seasonSuffix}_${fileSuffix}.png`.replace(/ /g, '_'),
+            subtitle: 'Saison-Statistiken',
+          });
         } catch (err) {
           console.error("Fehler beim Speichern als Bild:", err);
           alert("Es ist ein Fehler beim Erstellen des Bildes aufgetreten.");
         } finally {
-          elementToCapture.style.backgroundColor = originalBackgroundColor;
           setIsSavingImage(false);
         }
       };
