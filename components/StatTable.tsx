@@ -385,7 +385,7 @@ export const TeamTable: React.FC<{
                     </thead>
                     <tbody>
                         {processedPlayers.map(p => <PlayerStatRow key={p.id} player={p} showDetails={showDetails} maximums={maximums} isEditable={isEditable} onStatChange={onStatChange} />)}
-                        <tr className="bg-gray-700 font-bold border-t-2 border-gray-500">
+                        <tr data-export-role="total-row" className="bg-gray-700 font-bold border-t-2 border-gray-500">
                            <td className="py-2.5 px-3 text-left sticky left-0 z-10 bg-gray-700 border-r border-gray-600 min-w-[160px] sm:min-w-[190px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.5)]">TOTAL</td>
                             <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatMinutesDisplay(totals.MIN)}</td>
                             <td className="py-2.5 px-2 text-center whitespace-nowrap leading-normal">{formatStat(totalPoints)}</td>

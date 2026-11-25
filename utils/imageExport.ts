@@ -74,7 +74,8 @@ export const exportStatTableAsImage = async ({
     const firstTd = tds[0];
     const firstText = firstTd?.textContent?.trim() || '';
     const isTotal =
-      firstText.toUpperCase() === 'TOTAL' || tr.className.includes('bg-gray-700');
+      tr.getAttribute('data-export-role') === 'total-row' ||
+      firstText.toUpperCase() === 'TOTAL';
 
     let playerNumber = '';
     let playerName = firstText;
@@ -98,8 +99,8 @@ export const exportStatTableAsImage = async ({
 
     const cells: ParsedCell[] = tds.slice(1).map((td) => ({
       text: td.textContent?.trim() || '',
-      isHighlighted: td.className.includes('text-orange-400'),
-      isBold: td.className.includes('font-bold'),
+      isHighlighted: td.classList.contains('text-orange-400'),
+      isBold: td.classList.contains('font-bold'),
     }));
 
     return {
