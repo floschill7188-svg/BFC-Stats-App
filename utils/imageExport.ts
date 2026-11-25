@@ -371,5 +371,7 @@ export const exportStatTableAsImage = async ({
   const link = document.createElement('a');
   link.download = fileName;
   link.href = canvas.toDataURL('image/png');
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
 };
